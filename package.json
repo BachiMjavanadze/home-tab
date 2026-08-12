@@ -1,0 +1,104 @@
+{
+    "name": "home-tab",
+    "displayName": "Home Tab",
+    "description": "Keeps a placeholder tab open so the editor title bar never disappears, with quick action buttons.",
+    "version": "1.0.0",
+    "publisher": "BachiMjavanadze",
+    "icon": "logo.webp",
+    "repository": {
+        "type": "github",
+        "url": "https://github.com/BachiMjavanadze/home-tab"
+    },
+    "engines": {
+        "vscode": "^1.105.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "keywords": [
+        "tab",
+        "tab bar",
+        "title bar",
+        "editor title",
+        "placeholder",
+        "buttons"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "customEditors": [
+            {
+                "viewType": "homeTab.editor",
+                "displayName": "Home",
+                "selector": [
+                    {
+                        "filenamePattern": "**/Home Tab"
+                    }
+                ],
+                "priority": "default"
+            }
+        ],
+        "commands": [
+            {
+                "command": "homeTab.toggle",
+                "title": "Home Tab: Toggle"
+            }
+        ],
+        "configuration": {
+            "title": "Home Tab",
+            "properties": {
+                "homeTab.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Keep a placeholder tab open when no other editors are open."
+                },
+                "homeTab.buttons": {
+                    "type": "array",
+                    "description": "Buttons rendered on the placeholder tab.",
+                    "default": [
+                        {
+                            "label": "Open Chat",
+                            "command": "workbench.action.chat.toggle",
+                            "key": "ctrl+alt+i"
+                        },
+                        {
+                            "label": "Show All Commands",
+                            "command": "workbench.action.showCommands",
+                            "key": "ctrl+shift+p"
+                        },
+                        {
+                            "label": "Toggle Terminal",
+                            "command": "workbench.action.togglePanel",
+                            "key": "ctrl+`"
+                        }
+                    ],
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "label",
+                            "command"
+                        ],
+                        "additionalProperties": false,
+                        "properties": {
+                            "label": {
+                                "type": "string"
+                            },
+                            "command": {
+                                "type": "string"
+                            },
+                            "args": {
+                                "type": "array"
+                            },
+                            "key": {
+                                "type": "string",
+                                "description": "Display text only, not a real keybinding."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
