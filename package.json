@@ -2,7 +2,7 @@
 	"name": "home-tab",
 	"displayName": "Home Tab",
 	"description": "Keeps a placeholder tab open so the editor title bar never disappears, with quick action buttons.",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"publisher": "BachiMjavanadze",
     "icon": "logo.webp",
     "repository": {
