@@ -8,13 +8,20 @@ const homeUri = vscode.Uri.from({ scheme: scheme, path: '/Home Tab' });
 
 const panels = new Set();
 
+const userFiles = {
+    'workbench.action.openSettingsJson': 'settings.json',
+    'workbench.action.openGlobalKeybindingsFile': 'keybindings.json'
+};
+
 let extensionPath;
+let userFolderUri;
 let busy = false;
 let timer;
 
 function activate(context)
 {
     extensionPath = context.extensionPath;
+    userFolderUri = vscode.Uri.joinPath(context.globalStorageUri, '..', '..');
 
     context.subscriptions.push(
         vscode.workspace.registerFileSystemProvider(scheme, new StubFileSystemProvider(), { isReadonly: true, isCaseSensitive: true }),
@@ -132,18 +139,31 @@ async function sync()
             }
             else if (existing.length === 0)
             {
-                await vscode.commands.executeCommand('vscode.openWith', homeUri, viewType, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.One });
+                await openPlaceholder();
             }
         }
         else if (existing.length > 0)
         {
-            await vscode.window.tabGroups.close(existing, true);
+            const closable = existing.filter(function (tab)
+            {
+                return !tab.isPinned;
+            });
+
+            if (closable.length > 0)
+            {
+                await vscode.window.tabGroups.close(closable, true);
+            }
         }
     }
     finally
     {
         busy = false;
     }
+}
+
+function openPlaceholder()
+{
+    return vscode.commands.executeCommand('vscode.openWith', homeUri, viewType, { preview: false, preserveFocus: true, viewColumn: vscode.ViewColumn.One });
 }
 
 class StubFileSystemProvider
@@ -224,11 +244,42 @@ class HomeEditorProvider
                 return;
             }
 
-            const button = buttons[index];
-            const args = Array.isArray(button.args) ? button.args : [];
-            vscode.commands.executeCommand.apply(vscode.commands, [button.command].concat(args));
+            runButton(buttons[index]);
         });
     }
+}
+
+async function runButton(button)
+{
+    const args = Array.isArray(button.args) ? button.args : [];
+    const fileName = userFiles[button.command];
+
+    if (fileName && userFolderUri)
+    {
+        const uri = vscode.Uri.joinPath(userFolderUri, fileName);
+
+        try
+        {
+            const document = await vscode.workspace.openTextDocument(uri);
+            await vscode.window.showTextDocument(document, { preview: false });
+            return;
+        }
+        catch (error)
+        {
+        }
+    }
+
+    await vscode.commands.executeCommand.apply(vscode.commands, [resolveCommand(button)].concat(args));
+}
+
+function resolveCommand(button)
+{
+    if (button.command === 'workbench.action.files.openFolder' && process.platform === 'darwin')
+    {
+        return 'workbench.action.files.openFileFolder';
+    }
+
+    return button.command;
 }
 
 function renderAll()
