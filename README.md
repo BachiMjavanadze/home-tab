@@ -4,7 +4,7 @@ VS Code hides the editor title bar when no file is open, so any icon on that bar
 
 The placeholder opens when the last editor closes, and closes itself when any file opens.
 
- ![Image](https://raw.githubusercontent.com/BachiMjavanadze/home-tab/refs/heads/main/media/poster.jpg)
+ ![Image](https://raw.githubusercontent.com/BachiMjavanadze/home-tab/refs/heads/main/media/poster2.webp)
 
 ## Pinning
 
